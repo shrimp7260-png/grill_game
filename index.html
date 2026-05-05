@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>焼き加減マスター</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="startScreen" class="screen start-screen">
+        <div class="logo-mark" aria-hidden="true">🔥</div>
+        <p class="kicker">タイミングでおいしく仕上げる</p>
+        <h1>焼き加減マスター</h1>
+        <div class="mode-actions" aria-label="ゲームモード選択">
+          <button class="primary-button" type="button" data-start-mode="time">タイムアタック</button>
+          <button class="secondary-button" type="button" data-start-mode="endless">エンドレス</button>
+        </div>
+      </section>
+
+      <section id="gameScreen" class="screen game-screen is-hidden">
+        <header class="status-bar">
+          <div class="status-item">
+            <span>スコア</span>
+            <strong id="scoreText">0</strong>
+          </div>
+          <div class="status-item">
+            <span>コンボ</span>
+            <strong id="comboText">0</strong>
+          </div>
+          <div class="status-item">
+            <span id="timerLabel">時間</span>
+            <strong id="timeText">60</strong>
+          </div>
+        </header>
+
+        <p id="modeText" class="mode-text">タイムアタック 60秒</p>
+
+        <section class="food-stage" aria-label="食材">
+          <div id="foodShape" class="food-shape">
+            <span id="foodIcon" aria-hidden="true">🥩</span>
+          </div>
+          <h2 id="foodName">ステーキ</h2>
+          <p id="hintText" class="hint-text">緑のゾーンでタップ</p>
+        </section>
+
+        <section class="gauge-area" aria-label="焼き加減ゲージ">
+          <div class="gauge-labels" aria-hidden="true">
+            <span>生</span>
+            <span>PERFECT</span>
+            <span>焼きすぎ</span>
+          </div>
+          <div class="gauge-track">
+            <div class="perfect-zone"></div>
+            <div id="gaugeNeedle" class="gauge-needle"></div>
+          </div>
+          <p id="feedbackText" class="feedback" aria-live="assertive"></p>
+        </section>
+
+        <button id="grillButton" class="grill-button" type="button">焼く</button>
+      </section>
+
+      <section id="resultScreen" class="screen result-screen is-hidden">
+        <p id="resultModeText" class="kicker">タイムアタック結果</p>
+        <h2 id="resultTitle">焼き上がり</h2>
+        <div class="result-list">
+          <div>
+            <span>スコア</span>
+            <strong id="resultScore">0</strong>
+          </div>
+          <div>
+            <span>最大コンボ</span>
+            <strong id="resultMaxCombo">0</strong>
+          </div>
+          <div>
+            <span>成功数</span>
+            <strong id="resultSuccess">0</strong>
+          </div>
+        </div>
+        <div class="mode-actions">
+          <button id="retryButton" class="primary-button" type="button">もう一度</button>
+          <button id="backToStartButton" class="secondary-button" type="button">モード選択へ戻る</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

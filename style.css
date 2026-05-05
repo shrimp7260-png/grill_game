@@ -11,6 +11,9 @@
   --brown: #7b4727;
   --green: #2caf68;
   --red: #df4a32;
+  --perfect-left: 45%;
+  --perfect-width: 10%;
+  --perfect-right: 55%;
 }
 
 * {
@@ -221,13 +224,20 @@ h1 {
   border: 3px solid var(--brown);
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(90deg, #77bce9 0 24%, #efc06f 24% 39%, #2caf68 39% 61%, #d17a32 61% 79%, #2d241f 79% 100%);
+  background: linear-gradient(
+    90deg,
+    #77bce9 0 24%,
+    #efc06f 24% var(--perfect-left),
+    #2caf68 var(--perfect-left) var(--perfect-right),
+    #d17a32 var(--perfect-right) 78%,
+    #2d241f 78% 100%
+  );
 }
 
 .perfect-zone {
   position: absolute;
-  left: 39%;
-  width: 22%;
+  left: var(--perfect-left);
+  width: var(--perfect-width);
   top: 0;
   bottom: 0;
   border-left: 3px solid rgba(255, 255, 255, 0.82);

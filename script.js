@@ -2,20 +2,17 @@
 
 // まずは画像なしで遊べるよう、絵文字と名前で食材を表現します。
 const foods = [
-  { name: "ステーキ", icon: "🥩" },
-  { name: "パンケーキ", icon: "🥞" },
-  { name: "魚", icon: "🐟" },
-  { name: "トースト", icon: "🍞" },
-  { name: "焼きおにぎり", icon: "🍙" },
-  { name: "ソーセージ", icon: "🌭" },
-  { name: "とうもろこし", icon: "🌽" },
-  { name: "ハンバーグ", icon: "🍔" }
+  { name: "生ステーキ", icon: "🥩", speedMin: 20, speedMax: 25, perfectHalf: 6, goodHalf: 18, note: "じっくり焼く" },
+  { name: "厚切り魚", icon: "🐟", speedMin: 24, speedMax: 30, perfectHalf: 5, goodHalf: 16, note: "少しゆっくり" },
+  { name: "ハンバーグ", icon: "🍔", speedMin: 28, speedMax: 35, perfectHalf: 5, goodHalf: 15, note: "中まで火を通す" },
+  { name: "パンケーキ", icon: "🥞", speedMin: 34, speedMax: 42, perfectHalf: 4, goodHalf: 13, note: "焦げ目を狙う" },
+  { name: "ソーセージ", icon: "🌭", speedMin: 40, speedMax: 50, perfectHalf: 4, goodHalf: 12, note: "弾ける前に" },
+  { name: "とうもろこし", icon: "🌽", speedMin: 44, speedMax: 56, perfectHalf: 3.5, goodHalf: 11, note: "一気に焼ける" },
+  { name: "トースト", icon: "🍞", speedMin: 52, speedMax: 66, perfectHalf: 3.5, goodHalf: 10, note: "すぐ色づく" },
+  { name: "焼きおにぎり", icon: "🍙", speedMin: 64, speedMax: 78, perfectHalf: 3, goodHalf: 9, note: "超シビア" }
 ];
 
-const PERFECT_START = 39;
-const PERFECT_END = 61;
-const GOOD_START = 28;
-const GOOD_END = 72;
+const BEST_CENTER = 50;
 const ROUND_DELAY = 360;
 const FEEDBACK_TIME = 900;
 
@@ -50,6 +47,7 @@ const game = {
   timeLeft: 60,
   progress: 0,
   speed: 34,
+  currentFood: null,
   lastTime: 0,
   lastFoodName: "",
   animationId: 0,
@@ -123,15 +121,16 @@ function nextRound() {
   game.progress = 0;
   game.lastTime = 0;
   game.isWaitingNext = false;
-  game.speed = 31 + Math.random() * 12;
-
   const candidates = foods.filter((food) => food.name !== game.lastFoodName);
   const nextFood = candidates[Math.floor(Math.random() * candidates.length)];
+  game.currentFood = nextFood;
+  game.speed = nextFood.speedMin + Math.random() * (nextFood.speedMax - nextFood.speedMin);
   game.lastFoodName = nextFood.name;
   foodName.textContent = nextFood.name;
   foodIcon.textContent = nextFood.icon;
   gaugeNeedle.style.left = "0%";
-  hintText.textContent = "緑のゾーンでタップ";
+  hintText.textContent = nextFood.note;
+  updatePerfectZone(nextFood);
 
   cancelAnimationFrame(game.animationId);
   game.animationId = requestAnimationFrame(animateGauge);
@@ -180,11 +179,16 @@ function judgeCurrentTiming(isOvercooked = false) {
 }
 
 function getJudge(isOvercooked) {
-  if (!isOvercooked && game.progress >= PERFECT_START && game.progress <= PERFECT_END) {
+  const perfectStart = BEST_CENTER - game.currentFood.perfectHalf;
+  const perfectEnd = BEST_CENTER + game.currentFood.perfectHalf;
+  const goodStart = BEST_CENTER - game.currentFood.goodHalf;
+  const goodEnd = BEST_CENTER + game.currentFood.goodHalf;
+
+  if (!isOvercooked && game.progress >= perfectStart && game.progress <= perfectEnd) {
     return { name: "PERFECT", point: 2, isMiss: false };
   }
 
-  if (!isOvercooked && game.progress >= GOOD_START && game.progress <= GOOD_END) {
+  if (!isOvercooked && game.progress >= goodStart && game.progress <= goodEnd) {
     return { name: "GOOD", point: 1, isMiss: false };
   }
 
@@ -194,7 +198,8 @@ function getJudge(isOvercooked) {
 function applyJudge(result) {
   if (result.isMiss) {
     game.combo = 0;
-    hintText.textContent = game.progress < GOOD_START ? "早すぎ" : "焼きすぎ";
+    const goodStart = BEST_CENTER - game.currentFood.goodHalf;
+    hintText.textContent = game.progress < goodStart ? "早すぎ" : "焼きすぎ";
   } else {
     game.score += result.point;
     game.combo += 1;
@@ -205,6 +210,15 @@ function applyJudge(result) {
 
   showFeedback(result.name, result.isMiss);
   updateHud();
+}
+
+function updatePerfectZone(food) {
+  const perfectStart = BEST_CENTER - food.perfectHalf;
+  const perfectEnd = BEST_CENTER + food.perfectHalf;
+  const perfectWidth = food.perfectHalf * 2;
+  document.documentElement.style.setProperty("--perfect-left", `${perfectStart}%`);
+  document.documentElement.style.setProperty("--perfect-width", `${perfectWidth}%`);
+  document.documentElement.style.setProperty("--perfect-right", `${perfectEnd}%`);
 }
 
 function showFeedback(message, isMiss = false) {

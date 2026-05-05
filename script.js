@@ -2,14 +2,14 @@
 
 // まずは画像なしで遊べるよう、絵文字と名前で食材を表現します。
 const foods = [
-  { name: "生ステーキ", icon: "🥩", speedMin: 20, speedMax: 25, perfectHalf: 6, goodHalf: 18, note: "じっくり焼く" },
-  { name: "厚切り魚", icon: "🐟", speedMin: 24, speedMax: 30, perfectHalf: 5, goodHalf: 16, note: "少しゆっくり" },
-  { name: "ハンバーグ", icon: "🍔", speedMin: 28, speedMax: 35, perfectHalf: 5, goodHalf: 15, note: "中まで火を通す" },
-  { name: "パンケーキ", icon: "🥞", speedMin: 34, speedMax: 42, perfectHalf: 4, goodHalf: 13, note: "焦げ目を狙う" },
-  { name: "ソーセージ", icon: "🌭", speedMin: 40, speedMax: 50, perfectHalf: 4, goodHalf: 12, note: "弾ける前に" },
-  { name: "とうもろこし", icon: "🌽", speedMin: 44, speedMax: 56, perfectHalf: 3.5, goodHalf: 11, note: "一気に焼ける" },
-  { name: "トースト", icon: "🍞", speedMin: 52, speedMax: 66, perfectHalf: 3.5, goodHalf: 10, note: "すぐ色づく" },
-  { name: "焼きおにぎり", icon: "🍙", speedMin: 64, speedMax: 78, perfectHalf: 3, goodHalf: 9, note: "超シビア" }
+  { name: "生ステーキ", icon: "🥩", speedMin: 27, speedMax: 34, perfectHalf: 3.8, goodHalf: 11, note: "じっくりでも油断禁物" },
+  { name: "厚切り魚", icon: "🐟", speedMin: 32, speedMax: 40, perfectHalf: 3.4, goodHalf: 10, note: "少し早めに構える" },
+  { name: "ハンバーグ", icon: "🍔", speedMin: 38, speedMax: 48, perfectHalf: 3.1, goodHalf: 9.4, note: "中心だけ狙う" },
+  { name: "パンケーキ", icon: "🥞", speedMin: 47, speedMax: 59, perfectHalf: 2.8, goodHalf: 8.4, note: "焦げ目は一瞬" },
+  { name: "ソーセージ", icon: "🌭", speedMin: 56, speedMax: 70, perfectHalf: 2.5, goodHalf: 7.6, note: "弾ける前の一瞬" },
+  { name: "とうもろこし", icon: "🌽", speedMin: 64, speedMax: 82, perfectHalf: 2.3, goodHalf: 7, note: "一気に焼ける" },
+  { name: "トースト", icon: "🍞", speedMin: 76, speedMax: 96, perfectHalf: 2.1, goodHalf: 6.4, note: "すぐ焦げる" },
+  { name: "焼きおにぎり", icon: "🍙", speedMin: 92, speedMax: 116, perfectHalf: 1.8, goodHalf: 5.6, note: "ほぼ反射勝負" }
 ];
 
 const BEST_CENTER = 50;
@@ -47,6 +47,7 @@ const game = {
   timeLeft: 60,
   progress: 0,
   speed: 34,
+  roundCount: 0,
   currentFood: null,
   lastTime: 0,
   lastFoodName: "",
@@ -78,6 +79,7 @@ function startGame(mode) {
   game.successCount = 0;
   game.timeLeft = 60;
   game.progress = 0;
+  game.roundCount = 0;
   game.lastTime = 0;
   game.lastFoodName = "";
   game.isPlaying = true;
@@ -121,10 +123,13 @@ function nextRound() {
   game.progress = 0;
   game.lastTime = 0;
   game.isWaitingNext = false;
+  game.roundCount += 1;
   const candidates = foods.filter((food) => food.name !== game.lastFoodName);
   const nextFood = candidates[Math.floor(Math.random() * candidates.length)];
   game.currentFood = nextFood;
-  game.speed = nextFood.speedMin + Math.random() * (nextFood.speedMax - nextFood.speedMin);
+  const baseSpeed = nextFood.speedMin + Math.random() * (nextFood.speedMax - nextFood.speedMin);
+  const pressureBonus = Math.min(22, Math.floor(game.roundCount / 4) * 2);
+  game.speed = baseSpeed + pressureBonus;
   game.lastFoodName = nextFood.name;
   foodName.textContent = nextFood.name;
   foodIcon.textContent = nextFood.icon;
